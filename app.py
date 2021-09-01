@@ -125,7 +125,8 @@ def user_registration():
                 msg = Message('Email', sender='ghiyaathwilli092@gmail.com', recipients=[email_address])
                 msg.body = "You are successfully Login in"
                 mail.send(msg)
-            return "Email Sent"
+
+            return response
 
 
 @app.route("/user-login/", methods=["POST"])
