@@ -108,14 +108,14 @@ def user_registration():
         first_name = request.json['first_name']
         last_name = request.json['last_name']
         username = request.json['username']
-        address = request.json['address']
+
         password = request.json['password']
         email_address = request.json['email_address']
 
         with sqlite3.connect("hot_wheels.db") as conn:
             cursor = conn.cursor()
             cursor.execute(f"INSERT INTO user( first_name, last_name, username, email_address, address, password )"
-                           f"VALUES( '{first_name}', '{last_name}', '{username}', '{email_address}', '{address}', "
+                           f"VALUES( '{first_name}', '{last_name}', '{username}', '{email_address}', "
                            f"'{password}' )")
             conn.commit()
 
