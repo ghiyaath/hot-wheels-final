@@ -19,13 +19,11 @@ def create_user_table():
     print("Opened database successfully")
 
     with sqlite3.connect('hot_wheels.db') as connection:
-        connection.execute("CREATE TABLE IF NOT EXISTS user("
-                           "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        connection.execute("CREATE TABLE IF NOT EXISTS user(id INTEGER PRIMARY KEY AUTOINCREMENT,"
                            "first_name TEXT NOT NULL,"
                            "last_name TEXT NOT NULL,"
                            "username TEXT NOT NULL,"
                            "email_address TEXT NOT NULL,"
-                          
                            "password TEXT NOT NULL)")
 
     print("user table created successfully")
@@ -46,37 +44,37 @@ def create_product_table():
     print("user table created successfully")
 
 
-def fetch_users():
-    with sqlite3.connect('hot_wheels.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user")
-        db_users = cursor.fetchall()
-
-        new_data = []
-
-        for data in db_users:
-            print(data)
-            new_data.append(User(data[0], data[3], data[6]))
-    return new_data
-
-
-def authenticate(username, password):
-    user = username_table.get(username, None)
-    if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):
-        return user
+# def fetch_users():
+#     with sqlite3.connect('hot_wheels.db') as conn:
+#         cursor = conn.cursor()
+#         cursor.execute("SELECT * FROM user")
+#         db_users = cursor.fetchall()
+#
+#         new_data = []
+#
+#         for data in db_users:
+#             print(data)
+#             new_data.append(User(data[0], data[3], data[6]))
+#     return new_data
 
 
-def identity(payload):
-    user_id = payload['identity']
-    return userid_table.get(user_id, None)
+# def authenticate(username, password):
+#     user = username_table.get(username, None)
+#     if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):
+#         return user
+
+
+# def identity(payload):
+#     user_id = payload['identity']
+#     return userid_table.get(user_id, None)
 
 
 create_user_table()
 create_product_table()
-users = fetch_users()
+# users = fetch_users()
 
-username_table = {u.username: u for u in users}
-userid_table = {u.id: u for u in users}
+# username_table = {u.username: u for u in users}
+# userid_table = {u.id: u for u in users}
 
 app = Flask(__name__)
 app.debug = True
@@ -91,13 +89,13 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
-jwt = JWT(app, authenticate, identity)
+# jwt = JWT(app, authenticate, identity)
 
 
-@app.route('/protected')
-@jwt_required()
-def protected():
-    return '%s' % current_identity
+# @app.route('/protected')
+# @jwt_required()
+# def protected():
+#     return '%s' % current_identity
 
 
 @app.route('/user-registration/', methods=["POST"])
@@ -108,25 +106,28 @@ def user_registration():
         first_name = request.json['first_name']
         last_name = request.json['last_name']
         username = request.json['username']
-
         password = request.json['password']
         email_address = request.json['email_address']
 
-        with sqlite3.connect("hot_wheels.db") as conn:
-            cursor = conn.cursor()
-            cursor.execute(f"INSERT INTO user( first_name, last_name, username, email_address, password )"
-                           f"VALUES( '{first_name}', '{last_name}', '{username}', '{email_address}', "
-                           f"'{password}' )")
-            conn.commit()
+        with sqlite3.connect("hot_wheels.db") as connection:
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO user("
+                           "first_name,"
+                           "last_name,"
+                           "username,"
+                           "email_address,"
+                           "password) VALUES(?, ?, ?, ?, ?)", (first_name, last_name, username, email_address,
+                                                               password))
+            connection.commit()
 
             response["message"] = "success"
             response["status_code"] = 201
-            if response['status_code'] == 201:
-                msg = Message('Email', sender='ghiyaathwilli092@gmail.com', recipients=[email_address])
-                msg.body = "You are successfully Login in"
-                mail.send(msg)
+            # if response['status_code'] == 201:
+            #     msg = Message('Email', sender='ghiyaathwilli092@gmail.com', recipients=[email_address])
+            #     msg.body = "You are successfully Login in"
+            #     mail.send(msg)
 
-            return response
+        return response
 
 
 @app.route("/user-login/", methods=["POST"])
