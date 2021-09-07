@@ -25,7 +25,7 @@ def create_user_table():
                            "last_name TEXT NOT NULL,"
                            "username TEXT NOT NULL,"
                            "email_address TEXT NOT NULL,"
-                           "address TEXT NOT NULL,"
+                          
                            "password TEXT NOT NULL)")
 
     print("user table created successfully")
@@ -114,7 +114,7 @@ def user_registration():
 
         with sqlite3.connect("hot_wheels.db") as conn:
             cursor = conn.cursor()
-            cursor.execute(f"INSERT INTO user( first_name, last_name, username, email_address, address, password )"
+            cursor.execute(f"INSERT INTO user( first_name, last_name, username, email_address, password )"
                            f"VALUES( '{first_name}', '{last_name}', '{username}', '{email_address}', "
                            f"'{password}' )")
             conn.commit()
