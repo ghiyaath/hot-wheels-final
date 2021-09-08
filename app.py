@@ -130,30 +130,24 @@ def user_registration():
         return response
 
 
-@app.route("/user-login/", methods=["POST"])
+@app.route("/user-login/", methods=["PATCH"])
 def login():
     response = {}
 
-    if request.method == "POST":
-
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == "PATCH":
+        username = request.json["username"]
+        password = request.json["password"]
 
         with sqlite3.connect("hot_wheels.db") as conn:
+            # conn.row_factory = dict_factory
             cursor = conn.cursor()
-            cursor.execute(f"SELECT * FROM user WHERE username = '{username}' AND password = '{password}'")
-            user_information = cursor.fetchone()
+            cursor.execute("SELECT * FROM user WHERE username=? AND password=?", (username, password))
 
-        if user_information:
-            response["user_info"] = user_information
-            response["message"] = "Success"
-            response["status_code"] = 201
-            return jsonify(response)
+            user = cursor.fetchone()
 
-        else:
-            response['message'] = "Login Unsuccessful, please try again"
-            response['status_code'] = 401
-            return jsonify(response)
+        response["status_code"] = 200
+        response["data"] = user
+        return response
 
 
 @app.route('/add-product/', methods=["POST"])
