@@ -36,6 +36,7 @@ def create_product_table():
         connection.execute("CREATE TABLE IF NOT EXISTS product("
                            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                            "name TEXT NOT NULL,"
+                           "img TEXT NOT NULL,"
                            "description TEXT NOT NULL,"
                            "price TEXT NOT NULL,"
                            "category TEXT NOT NULL,"
@@ -157,6 +158,7 @@ def add_product():
 
     if request.method == "POST":
         name = request.form['name']
+        img = request.form['img']
         description = request.form['description']
         price = request.form['price']
         category = request.form['category']
@@ -164,8 +166,8 @@ def add_product():
 
         with sqlite3.connect('hot_wheels.db') as conn:
             cursor = conn.cursor()
-            cursor.execute(f"INSERT INTO product( name, description, price, category, review )"
-                           f"VALUES( '{name}', '{description}', '{price}', '{category}', '{review}' )")
+            cursor.execute(f"INSERT INTO product( name, img, description, price, category, review )"
+                           f"VALUES( '{name}', '{img}', '{description}', '{price}', '{category}', '{review}' )")
             conn.commit()
 
             response["status_code"] = 201
